@@ -1,0 +1,7 @@
+.classpath
+.project
+config.properties
+target/
+*.sql
+.settings/
+*.log
