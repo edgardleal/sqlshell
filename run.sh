@@ -3,6 +3,8 @@
 declare sql=""
 declare connection="$1"
 declare parameter=""
+ABSPATH=/Users/edgardleal/projetos/maquinadevendas/sqlshell
+cd $ABSPATH
 
 if [ -e "$2" ]; then
     parameter="$1 < $2"
@@ -15,8 +17,7 @@ else
         vim $tmp_file
         java -cp 'target/sqlshell.jar:./target/dependency/*' com.edgardleal.sqlshell.Main $1 < $tmp_file
     else
-        parameter="$@"
-        java -cp 'target/sqlshell.jar:./target/dependency/*' com.edgardleal.sqlshell.Main $parameter
+        java -cp 'target/sqlshell.jar:./target/dependency/*' com.edgardleal.sqlshell.Main "$1" "$2"
     fi
 fi
 
