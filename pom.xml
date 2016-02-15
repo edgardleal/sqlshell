@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.edgardleal</groupId>
+	<artifactId>sqlshell</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>sqlshell</name>
+	<description>Execute SQL queries on terminal</description>
+
+	<properties>
+		<jdk.version>1.8</jdk.version>
+	</properties>
+
+	<developers>
+		<developer>
+			<id>edgardleal</id>
+			<name>Edgard Leal</name>
+			<email>edgardleal@gmail.com</email>
+			<url>http://edgardleal.com</url>
+			<organization>Soledade Tecnologia</organization>
+			<organizationUrl>http://soledadetecnologia.com.br</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>America/Bahia</timezone>
+			<properties>
+				<picUrl>https://s.gravatar.com/avatar/00b3fd76183b7986ed53dd2719520e17?s=80</picUrl>
+			</properties>
+		</developer>
+	</developers>
+
+
+	<build>
+		<finalName>sqlshell</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+
+						<configuration>
+							<outputDirectory>${targetdirectory}</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+
+				<!-- <groupId>org.apache.maven.plugins</groupId> <version>2.3.2</version> -->
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<useIncrementalCompilation>false</useIncrementalCompilation>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-testCompile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+	</dependencies>
+
+</project>
