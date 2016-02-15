@@ -22,7 +22,8 @@ public class ConsoleRender implements Render {
   @Override
   public void renderResultSet(ResultSet resultSet) {
 
-    System.out.println(npad('-', 50));
+    StringBuilder data = new StringBuilder();
+    StringBuilder tableHeader = new StringBuilder();
     try {
       ResultSetMetaData metaData = resultSet.getMetaData();
 
@@ -33,44 +34,51 @@ public class ConsoleRender implements Render {
       int[] widths = new int[masks.length];
       for (int i = 1; i <= metaData.getColumnCount(); i++) {
         if (i == 1) {
-          System.out.print("| ");
+          data.append("| ");
+          tableHeader.append("+-");
+        } else {
+          tableHeader.append('-');
         }
         widths[i - 1] =
             Math.max(Math.min(metaData.getColumnDisplaySize(i), MAX_CONTENT_WIDTH), metaData
                 .getColumnName(i).length());
         masks[i - 1] = String.format("%%-%ds", widths[i - 1]);
-        System.out.print(String.format(masks[i - 1], metaData.getColumnName(i)) + " | ");
+
+        tableHeader.append(npad('-', widths[i - 1]) + "-+");
+        data.append(String.format(masks[i - 1], metaData.getColumnName(i)) + " | ");
       }
-      System.out.println();
+      data.append('\n');
       /**
        * Imprimi separador dos titulo para os dados
        */
       for (int i = 0; i < masks.length; i++) {
         if (i == 0) {
-          System.out.print("+-");
+          data.append("+-");
+        } else {
+          data.append('-');
         }
-        System.out.print(String.format("%s-+", npad('-', widths[i] + 1)));
+        data.append(String.format("%s+", npad('-', widths[i] + 1)));
       }
 
-      System.out.println();
       while (resultSet.next()) {
 
+        data.append('\n');
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
           if (i == 1) {
-            System.out.print("| ");
+            data.append("| ");
           }
           // masks[i - 1] = String.format("%%-%ds", metaData.getColumnDisplaySize(i));
-          System.out.print(String.format(masks[i - 1],
+          data.append(String.format(masks[i - 1],
               StringUtils.abbreviate(resultSet.getString(i), MAX_CONTENT_WIDTH))
               + " | ");
         }
-        System.out.println();
-
       }
+      System.out.println(tableHeader.toString());
+      System.out.println(data.toString());
+      System.out.println(tableHeader.toString());
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    System.out.println(npad('-', 50));
   }
 
 }
