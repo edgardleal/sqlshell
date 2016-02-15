@@ -6,15 +6,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.lang3.SystemUtils;
+
 public class Config {
 
   static Properties properties = null;
   public static String current_connection;
+  private static final File USER_CONFIG_FILE = new File(SystemUtils.USER_HOME,
+      ".sqlshell.properties");
+  private static final File LOCAL_CONFIG_FILE = new File("config.properties");
 
   private static Properties getProperties() throws FileNotFoundException, IOException {
     if (properties == null) {
       properties = new Properties();
-      properties.load(new FileInputStream(new File("config.properties")));
+      if (USER_CONFIG_FILE.exists()) {
+        properties.load(new FileInputStream(USER_CONFIG_FILE));
+      } else {
+        properties.load(new FileInputStream(LOCAL_CONFIG_FILE));
+      }
     }
 
     return properties;
