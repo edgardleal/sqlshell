@@ -19,7 +19,9 @@ if [ -z "$(whereis $command_name)" ]; then
     for i in $(echo $path_list)
     do
         if [ -w $i ]; then
-            ln -s ${app_path}/run.sh ${i}/sqlshell
+            cd $app_path
+            cat run.sh | tr "ABSPATH.*" "ABSPATH=$ABSPATH" > run2.sh
+            # ln -s ${app_path}/run.sh ${i}/sqlshell
             echo "sqlshell installed in ${i}"
             exit 0
         fi
