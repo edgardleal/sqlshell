@@ -17,7 +17,7 @@ else
         vim $tmp_file
         java -cp 'target/sqlshell.jar:./target/dependency/*' com.edgardleal.sqlshell.Main $1 < $tmp_file
     else
-        java -cp 'target/sqlshell.jar:./target/dependency/*' com.edgardleal.sqlshell.Main "$1" "$2"
+        java -Xmx10M -cp 'target/sqlshell.jar:./target/dependency/*' com.edgardleal.sqlshell.Main "$1" "$2"
     fi
 fi
 
