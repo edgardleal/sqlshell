@@ -2,6 +2,7 @@ package com.edgardleal.sqlshell;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -11,6 +12,26 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+
+  private static void processUpdate(String command) throws FileNotFoundException, IOException {
+    try (PreparedStatement statement = ConnectionFactory.getStatement(command)) {
+      Render render = new ConsoleRender();
+      render.renderBoolean(statement.execute());
+    } catch (SQLException se) {
+      System.out.println(String.format("Erro ao executar o comando: [%s]", command));
+      se.printStackTrace();
+    }
+  }
+
+  public static void processSelect(final String command) throws FileNotFoundException, IOException {
+    try (ResultSet resultSet = ConnectionFactory.getStatement(command).executeQuery()) {
+      Render render = new ConsoleRender();
+      render.renderResultSet(resultSet);
+    } catch (SQLException se) {
+      System.out.println(String.format("Erro ao executar o comando: [%s]", command));
+      se.printStackTrace();
+    }
+  }
 
   public static void main(String[] args) throws FileNotFoundException, IOException, SQLException {
 
@@ -30,18 +51,17 @@ public class Main {
 
     if (builder.length() > 0) {
       ConnectionFactory.getConnection();
-      try (ResultSet resultSet = ConnectionFactory.getStatement(builder.toString()).executeQuery()) {
-        Render render = new ConsoleRender();
-        render.renderResultSet(resultSet);
-      } catch (SQLException se) {
-        System.out.println(String.format("Erro ao executar o comando: [%s]", builder.toString()));
-        se.printStackTrace();
+      String command = builder.toString();
+      if (command.toString().replaceAll("[\n\t\t]+", "").toUpperCase().indexOf("SELECT") == 0) {
+        processSelect(builder.toString());
+      } else {
+        processUpdate(command);
       }
     }
 
     ConnectionFactory.close();
 
-    LOGGER.info(DurationFormatUtils.formatDurationISO(System.currentTimeMillis() - start));
+    LOGGER.info(DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "s.S"));
   }
 
 }

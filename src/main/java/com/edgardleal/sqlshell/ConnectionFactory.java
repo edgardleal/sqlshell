@@ -78,7 +78,7 @@ public final class ConnectionFactory {
       if (conn != null) {
         conn.close();
       }
-      LOGGER.info("Todas as conexoes com o banco de dados foram fechadas.");
+      LOGGER.debug("All connections are closed.");
       conn = null;
       statements = new HashMap<String, Statement>();
     } catch (Exception e) {

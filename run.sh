@@ -3,7 +3,7 @@
 declare sql=""
 declare connection="$1"
 declare parameter=""
-ABSPATH=/Users/edgardleal/projetos/maquinadevendas/sqlshell
+ABSPATH=/Users/edgardleal/projetos/sqlshell
 cd $ABSPATH
 
 if [ -e "$2" ]; then
@@ -12,7 +12,7 @@ if [ -e "$2" ]; then
 else
 
     if [ "$#" == "1" ]; then
-        tmp_file="$(mktemp -t sqlshell)"
+        tmp_file="$(mktemp -t sqlshell).sql"
         trap "rm $tmp_file; exit" 0 1 2 3 15
         vim $tmp_file
         java -cp 'target/sqlshell.jar:./target/dependency/*' com.edgardleal.sqlshell.Main $1 < $tmp_file
