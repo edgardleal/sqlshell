@@ -3,7 +3,7 @@
 declare sql=""
 declare connection="$1"
 declare parameter=""
-ABSPATH=/Users/edgardleal/projetos/maquinadevendas/sqlshell
+ABSPATH=$HOME/projetos/sqlshell
 cd $ABSPATH
 
 if [ -e "$2" ]; then

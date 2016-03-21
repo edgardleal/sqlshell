@@ -6,7 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+
+import com.edgardleal.sqlshell.render.Render;
 
 public class Config {
 
@@ -33,21 +36,47 @@ public class Config {
     return getProperties().getProperty(key);
   }
 
+  public static String getEnv(final String key, final String def) {
+    String result = System.getenv(key);
+    if (StringUtils.isBlank(result)) {
+      result = def;
+    }
+
+    return result;
+  }
+
   public static String get(String key, String def) {
     String result;
     try {
-      result = getProperties().getProperty(key);
-      if (result == null || result.equals("")) {
+      result = getProperties().getProperty(key, getEnv(key, StringUtils.EMPTY));
+      if (StringUtils.isBlank(result)) {
         result = def;
       }
     } catch (IOException e) {
       result = def;
     }
+
     return result;
   }
 
+  public static String getDb(final String key, final String def) throws FileNotFoundException,
+      IOException {
+    return get(String.format("%s.%s", current_connection, key), def);
+  }
+
   public static String getDb(String key) throws FileNotFoundException, IOException {
-    return get(String.format("%s.%s", current_connection, key));
+    return getDb(key, StringUtils.EMPTY);
+  }
+
+  public static Render getRender() throws FileNotFoundException, IOException,
+      InstantiationException, IllegalAccessException, ClassNotFoundException {
+    Render render;
+    String className = getDb("render", get("render", "console"));
+    className =
+        String.format("com.edgardleal.sqlshell.render.%sRender", StringUtils.capitalize(className));
+    render = (Render) Class.forName(className).newInstance();
+
+    return render;
   }
 
 }

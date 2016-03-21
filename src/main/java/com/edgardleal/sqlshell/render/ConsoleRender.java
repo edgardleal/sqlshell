@@ -1,4 +1,4 @@
-package com.edgardleal.sqlshell;
+package com.edgardleal.sqlshell.render;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

@@ -22,3 +22,7 @@ To compile you will need to have the following tools:
 ``` ./run.sh alias 'Select * from table' ```   
 
 ``` ./run.sh alias  ```  will open vim to create SQL command in a temporary file
+
+# Executin with others renders
+
+``` render=csv ./run.sh alias 'Select * from table' ```   
