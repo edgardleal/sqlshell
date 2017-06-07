@@ -17,7 +17,7 @@ public class CommandExecutor {
       command.execute(args);
       return true;
     } catch (ClassNotFoundException e) {
-      
+
     } catch (IllegalAccessException e) {
       e.printStackTrace();
     } catch (InstantiationException e) {
