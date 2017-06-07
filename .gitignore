@@ -5,3 +5,7 @@ target/
 *.sql
 .settings/
 *.log
+
+# Intelij files
+*.iml
+.idea/*

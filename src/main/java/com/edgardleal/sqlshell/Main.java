@@ -1,5 +1,6 @@
 package com.edgardleal.sqlshell;
 
+import com.edgardleal.config.Config;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.PreparedStatement;

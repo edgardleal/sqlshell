@@ -1,20 +1,22 @@
-package com.edgardleal.sqlshell;
+package com.edgardleal.config;
 
+import com.edgardleal.log.Log;
+import com.edgardleal.log.LogFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
-
 import org.apache.commons.lang3.SystemUtils;
 
 public class Config {
 
-  static Properties properties = null;
-  public static String current_connection;
+  private static final Log LOGGER = LogFactory.getLog(Config.class);
   private static final File USER_CONFIG_FILE = new File(SystemUtils.USER_HOME,
       ".sqlshell.properties");
   private static final File LOCAL_CONFIG_FILE = new File("config.properties");
+  public static String current_connection;
+  private static Properties properties = null;
 
   private static Properties getProperties() throws FileNotFoundException, IOException {
     if (properties == null) {
@@ -47,7 +49,10 @@ public class Config {
   }
 
   public static String getDb(String key) throws FileNotFoundException, IOException {
-    return get(String.format("%s.%s", current_connection, key));
+    final String finalKey = String.format("%s.%s", current_connection, key);
+    final String result = get(finalKey);
+    LOGGER.debug("config.database.key.value", key, result);
+    return result;
   }
 
 }

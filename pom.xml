@@ -17,6 +17,7 @@
 			<name>Edgard Leal</name>
 			<email>edgardleal@gmail.com</email>
 			<url>http://edgardleal.com</url>
+            <roles>
 				<role>architect</role>
 				<role>developer</role>
 			</roles>
@@ -57,6 +58,8 @@
 					<useIncrementalCompilation>false</useIncrementalCompilation>
 					<source>${jdk.version}</source>
 					<target>${jdk.version}</target>
+                    <debug>false</debug>
+                    <optimize>true</optimize>
 				</configuration>
 				<executions>
 					<execution>
