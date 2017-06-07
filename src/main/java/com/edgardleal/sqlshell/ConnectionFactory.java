@@ -4,7 +4,6 @@ package com.edgardleal.sqlshell;
 import com.edgardleal.config.Config;
 import com.edgardleal.log.Log;
 import com.edgardleal.log.LogFactory;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,9 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TimeZone;
-
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -30,16 +27,15 @@ import org.slf4j.LoggerFactory;
  */
 public final class ConnectionFactory {
 
-  public static final String CONNECTION_URL = "connectionURL";
-  private static Connection conn = null;
-  static String oracle_driver = "oracle.jdbc.driver.OracleDriver";
-  static String mysql_driver = "com.mysql.jdbc.Driver";
-  private static HashMap<String, Statement> statements = new HashMap<>();
-  /** Constant <code>logger</code> */
+  /**
+   * Constant <code>logger</code>
+   */
   public static final Log LOGGER = LogFactory.getLog(ConnectionFactory.class);
+  private static Connection conn = null;
+  private static HashMap<String, Statement> statements = new HashMap<>();
 
   private ConnectionFactory() {
-
+      // this class is a singleton
   }
 
   /**
@@ -49,14 +45,13 @@ public final class ConnectionFactory {
    *
    * @param statement a {@link Statement} object.
    */
-  public static void closeStatement(Statement statement) {
+  public static void closeStatement(final Statement statement) {
     if (statement != null) {
       try {
         statement.close();
       } catch (SQLException e) {
         e.printStackTrace();
       }
-      statement = null;
     }
   }
 
@@ -95,17 +90,16 @@ public final class ConnectionFactory {
    * getStatement.
    * </p>
    *
-   * @param sql a {@link java.lang.String} object.
-   * @return a {@link java.sql.PreparedStatement} object.
-   * @throws java.sql.SQLException if any.
-   * @throws java.io.IOException if any.
-   * @throws java.io.FileNotFoundException if any.
+   * @param sql a {@link String} object.
+   * @return a {@link PreparedStatement} object.
+   * @throws SQLException if any.
+   * @throws IOException if any.
    */
   public static PreparedStatement getStatement(final String sql) throws SQLException,
-      FileNotFoundException, IOException {
+      IOException {
     PreparedStatement stm = (PreparedStatement) statements.get(sql);
     if (stm == null) {
-      LOGGER.debug("Criando um statement para a query: ", sql);
+      LOGGER.debug("database.statement.query", sql);
       stm = getConnection().prepareStatement(sql);
       statements.put(sql, stm);
     }
@@ -118,8 +112,6 @@ public final class ConnectionFactory {
    * </p>
    *
    * @return a {@link java.sql.Connection} object.
-   * @throws IOException 
-   * @throws FileNotFoundException 
    */
   public static synchronized Connection createConnection() throws IOException {
     if (conn != null) {
@@ -139,7 +131,7 @@ public final class ConnectionFactory {
                 Config.getDb("pass"));
         conn.setAutoCommit(false);
       } catch (SQLException e) {
-        LOGGER.error("Erro ao se conectar com o banco de dados", e);
+        LOGGER.error("error.database.connecting", e);
 
       }
 
@@ -152,10 +144,9 @@ public final class ConnectionFactory {
    * getConnection.
    * </p>
    *
-   * @return a {@link java.sql.Connection} object.
-   * @throws java.io.IOException if any.
-   * @throws java.io.FileNotFoundException if any.
-   * @throws java.sql.SQLException if any.
+   * @return a {@link Connection} object.
+   * @throws IOException if any.
+   * @throws SQLException if any.
    */
   public static Connection getConnection() throws IOException, SQLException {
     if (conn == null) {

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+declare MEMORY="5M"
+
 declare sql=""
 declare connection="$1"
 declare parameter=""
@@ -18,7 +20,7 @@ elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]; then
     SP=";"
 fi
 
-declare JAVA_OPTS="-Xmx10M -client"
+declare JAVA_OPTS="-Xmx${MEMORY} -client"
 
 function setup() 
 {
@@ -35,7 +37,8 @@ setup
 
 if [ -e "$2" ]; then
     parameter="$1 < $2"
-    java $JAVA_OPTS -cp "target/sqlshell.jar${SP}./target/dependency/\*" com.edgardleal.sqlshell.Main $1 < $2
+    java $JAVA_OPTS -cp "target/classes/${SP}./target/dependency/\*" com.edgardleal.sqlshell.Main $1 < $2
+
 else
 
     if [ "$#" == "1" ]; then
@@ -43,9 +46,9 @@ else
         tmp_file="$(mktemp).sql"
         trap "rm $tmp_file; exit" 0 1 2 3 15
         vim $tmp_file
-        java $JAVA_OPTS -cp "target/sqlshell.jar${SP}./target/dependency/\*" com.edgardleal.sqlshell.Main $1 < $tmp_file
+        java $JAVA_OPTS -cp "target/classes/${SP}./target/dependency/\*" com.edgardleal.sqlshell.Main $1 < $tmp_file
     else
-        java $JAVA_OPTS -cp "target/sqlshell.jar${SP}./target/dependency/\*" com.edgardleal.sqlshell.Main "$1" "$2"
+        java $JAVA_OPTS -cp "target/classes/${SP}./target/dependency/\*" com.edgardleal.sqlshell.Main "$1" "$2"
     fi
 fi
 
