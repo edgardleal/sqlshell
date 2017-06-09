@@ -19,4 +19,14 @@ public class CsvRender implements Render {
     }
   }
 
+  @Override
+  public void renderBoolean(boolean value) {
+	  try {
+		  CSVFormat.EXCEL.withHeader("RESULT").print(System.out).print(value);
+	  } catch (IOException e) {
+		  e.printStackTrace();
+	  }
+
+  }
+
 }

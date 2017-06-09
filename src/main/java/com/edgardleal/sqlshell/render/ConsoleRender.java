@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ConsoleRender implements Render {
 
-  private static final int MAX_CONTENT_WIDTH = 40;
+  private static final int MAX_CONTENT_WIDTH = 35;
 
   private String npad(char value, int times) {
     StringBuilder builder = new StringBuilder();
@@ -68,8 +68,10 @@ public class ConsoleRender implements Render {
             data.append("| ");
           }
           // masks[i - 1] = String.format("%%-%ds", metaData.getColumnDisplaySize(i));
-          data.append(String.format(masks[i - 1],
-              StringUtils.abbreviate(resultSet.getString(i), MAX_CONTENT_WIDTH))
+          data.append(String.format(
+              masks[i - 1],
+              StringUtils.abbreviate(resultSet.getString(i),
+                  Math.min(Math.max(4, widths[i - 1]), MAX_CONTENT_WIDTH - 3)))
               + " | ");
         }
       }
@@ -79,6 +81,22 @@ public class ConsoleRender implements Render {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public void renderBoolean(boolean value) {
+    StringBuilder builder = new StringBuilder();
+    builder.append("+-----------+\n")
+        //
+        .append("| RESULT    |\n")
+        //
+        .append("+-----------+\n")
+        //
+        .append("| ").append(value ? "TRUE " : "FALSE").append("     |\n")
+        .append("+----------------------------------------+\n");
+
+    System.out.println(builder.toString());
+
   }
 
 }

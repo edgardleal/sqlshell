@@ -1,7 +1,9 @@
 package com.edgardleal.sqlshell;
 
 
-import java.io.FileNotFoundException;
+import com.edgardleal.config.Config;
+import com.edgardleal.log.Log;
+import com.edgardleal.log.LogFactory;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,8 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TimeZone;
-
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -26,16 +27,15 @@ import org.slf4j.LoggerFactory;
  */
 public final class ConnectionFactory {
 
-  public static final String CONNECTION_URL = "connectionURL";
+  /**
+   * Constant <code>logger</code>
+   */
+  public static final Log LOGGER = LogFactory.getLog(ConnectionFactory.class);
   private static Connection conn = null;
-  static String oracle_driver = "oracle.jdbc.driver.OracleDriver";
-  static String mysql_driver = "com.mysql.jdbc.Driver";
   private static HashMap<String, Statement> statements = new HashMap<>();
-  /** Constant <code>logger</code> */
-  public static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(ConnectionFactory.class);
 
   private ConnectionFactory() {
-
+    // this class is a singleton
   }
 
   /**
@@ -43,16 +43,15 @@ public final class ConnectionFactory {
    * closeStatement.
    * </p>
    *
-   * @param statement a {@link java.sql.Statement} object.
+   * @param statement a {@link Statement} object.
    */
-  public static void closeStatement(Statement statement) {
+  public static void closeStatement(final Statement statement) {
     if (statement != null) {
       try {
         statement.close();
       } catch (SQLException e) {
         e.printStackTrace();
       }
-      statement = null;
     }
   }
 
@@ -65,24 +64,24 @@ public final class ConnectionFactory {
     try {
 
       Iterator<Entry<String, Statement>> iterator = statements.entrySet().iterator();
-      LOGGER.debug("Fechando {} statements", statements.size());
+      LOGGER.debug("database.statement.closing", statements.size());
 
       while (iterator.hasNext()) {
         try {
           iterator.next().getValue().close();
         } catch (Exception e) {
-          LOGGER.error("Erro ao fechar o Statement", e);
+          LOGGER.error("error.database.statement.closing", e);
         }
       }
 
       if (conn != null) {
         conn.close();
       }
-      LOGGER.info("Todas as conexoes com o banco de dados foram fechadas.");
+      LOGGER.debug("database.connection.all.closed");
       conn = null;
-      statements = new HashMap<String, Statement>();
+      statements = new HashMap<>();
     } catch (Exception e) {
-      LOGGER.error("Erro ao fechar a conexao com o banco de dados", e);
+      LOGGER.error("error.database.closing", e);
     }
   }
 
@@ -91,18 +90,15 @@ public final class ConnectionFactory {
    * getStatement.
    * </p>
    *
-   * @param sql a {@link java.lang.String} object.
-   * @return a {@link java.sql.PreparedStatement} object.
-   * @throws java.sql.SQLException if any.
-   * @throws java.io.IOException if any.
-   * @throws java.io.FileNotFoundException if any.
+   * @param sql a {@link String} object.
+   * @return a {@link PreparedStatement} object.
+   * @throws SQLException if any.
+   * @throws IOException if any.
    */
-  public static PreparedStatement getStatement(final String sql) throws SQLException,
-      FileNotFoundException, IOException {
+  public static PreparedStatement getStatement(final String sql) throws SQLException, IOException {
     PreparedStatement stm = (PreparedStatement) statements.get(sql);
     if (stm == null) {
-      LOGGER.debug("Criando um statement para a query: ");
-      LOGGER.debug(sql);
+      LOGGER.debug("database.statement.query", sql);
       stm = getConnection().prepareStatement(sql);
       statements.put(sql, stm);
     }
@@ -111,32 +107,30 @@ public final class ConnectionFactory {
 
   /**
    * <p>
-   * obterConexao.
+   * createConnection.
    * </p>
    *
-   * @param prop a {@link java.util.Properties} object.
    * @return a {@link java.sql.Connection} object.
-   * @throws IOException 
-   * @throws FileNotFoundException 
    */
-  public static synchronized Connection obterConexao() throws FileNotFoundException, IOException {
+  public static synchronized Connection createConnection() throws IOException {
     if (conn != null) {
       return conn;
     } else {
+      String driver = StringUtils.EMPTY;
       try {
-        Class.forName(Config.getDb("driver"));
+        driver = Config.getDb("driver");
+        Class.forName(driver);
       } catch (ClassNotFoundException e) {
-        LOGGER.error("Erro ao inicializar o driver de conexao com o banco de dados", e);
-        LOGGER.error("Driver: [{}]", mysql_driver);
+        LOGGER.error("error.database.driver.not.found", driver);
       }
+      String url = Config.getDb("url"), user = Config.getDb("user"), pass = Config.getDb("pass");
 
       try {
-        conn =
-            DriverManager.getConnection(Config.getDb("url"), Config.getDb("user"),
-                Config.getDb("pass"));
+        conn = DriverManager.getConnection(url, user, pass);
         conn.setAutoCommit(false);
       } catch (SQLException e) {
-        LOGGER.error("Erro ao se conectar com o banco de dados", e);
+        LOGGER.error("error.database.connecting", e);
+
       }
 
       return conn;
@@ -148,17 +142,16 @@ public final class ConnectionFactory {
    * getConnection.
    * </p>
    *
-   * @return a {@link java.sql.Connection} object.
-   * @throws java.io.IOException if any.
-   * @throws java.io.FileNotFoundException if any.
-   * @throws java.sql.SQLException if any.
+   * @return a {@link Connection} object.
+   * @throws IOException if any.
+   * @throws SQLException if any.
    */
-  public static Connection getConnection() throws IOException, FileNotFoundException, SQLException {
+  public static Connection getConnection() throws IOException, SQLException {
     if (conn == null) {
       TimeZone timeZone = TimeZone.getTimeZone("UTC+03:00");
       TimeZone.setDefault(timeZone);
-      LOGGER.debug("Conectando-se ao banco de dados");
-      obterConexao();
+      LOGGER.debug("database.connecting");
+      createConnection();
       conn.setAutoCommit(false);
     }
     return conn;

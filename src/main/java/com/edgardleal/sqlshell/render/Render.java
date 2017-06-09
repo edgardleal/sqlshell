@@ -4,5 +4,6 @@ import java.sql.ResultSet;
 
 public interface Render {
 
-  public void renderResultSet(ResultSet resultSet);
+  void renderResultSet(ResultSet resultSet);
+  void renderBoolean(boolean value);
 }
