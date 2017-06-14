@@ -60,8 +60,8 @@ public class Main {
         builder.append(string).append(' ');
       }
     }
-    for (int i = 1; i < args.length; i++) {
-      builder.append(args[i]).append(' ');
+    if (builder.length() == 0) {
+      builder.append(Config.get("query"));
     }
 
     if (builder.length() > 0) {
@@ -70,6 +70,7 @@ public class Main {
       String command = builder.toString();
       if (command.toString().replaceAll("[\n\t\t]+", StringUtils.EMPTY).toUpperCase()
           .indexOf("SELECT") == 0) {
+
         processSelect(builder.toString());
       } else {
         processUpdate(command);
