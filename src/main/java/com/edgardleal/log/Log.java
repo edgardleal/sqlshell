@@ -38,6 +38,10 @@ public class Log {
     logger.debug(formatt(translated, args));
   }
 
+  public boolean isDebugEnabled() {
+    return logger.isDebugEnabled();
+  }
+
   public void error(String message, Exception e) {
     logger.error(translate(message), e);
   }

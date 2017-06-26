@@ -129,8 +129,10 @@ public final class ConnectionFactory {
         conn = DriverManager.getConnection(url, user, pass);
         conn.setAutoCommit(false);
       } catch (SQLException e) {
-        LOGGER.error("error.database.connecting", e);
-
+        LOGGER.error("error.database.connecting");
+        if(LOGGER.isDebugEnabled()) {
+          LOGGER.error("error.database.connecting", e);
+        }
       }
 
       return conn;
